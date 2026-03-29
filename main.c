@@ -40,12 +40,16 @@ int main() {
             case 3:
                 editFile();
                 break;
-            case 4:
-            char filename[100];
-            printf("Masukkan nama file: ");
-            scanf("%s", filename);
+           case 4: {
+                 char filename[100];
 
-            findAndReplace(filename);
+                printf("Masukkan nama file: ");
+                scanf("%99s", filename);
+
+                findAndReplace(filename);
+
+                break;
+            }   
             break;
             case 5:
                 exitEditor();
