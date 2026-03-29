@@ -44,17 +44,13 @@ int main() {
                 break;
 
             case 4: {
-    char filename[100];
-
-    while (getchar() != '\n'); // 🔥 WAJIB
-
-    printf("Masukkan nama file: ");
-    fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\n")] = 0;
-
-    findAndReplace(filename);
-    break;
-}
+                char filename[100];
+                printf("Masukkan nama file: ");
+                fgets(filename, sizeof(filename), stdin);
+                filename[strcspn(filename, "\n")] = 0;
+                findAndReplace(filename);
+                break;
+            }
 
             case 5:
                 exitEditor();
