@@ -44,15 +44,17 @@ int main() {
                 break;
 
             case 4: {
-                char filename[100];
+    char filename[100];
 
-                printf("Masukkan nama file: ");
-                fgets(filename, sizeof(filename), stdin);
-                filename[strcspn(filename, "\n")] = 0;
+    while (getchar() != '\n'); // 🔥 WAJIB
 
-                findAndReplace(filename);
-                break;
-            }
+    printf("Masukkan nama file: ");
+    fgets(filename, sizeof(filename), stdin);
+    filename[strcspn(filename, "\n")] = 0;
+
+    findAndReplace(filename);
+    break;
+}
 
             case 5:
                 exitEditor();
@@ -64,7 +66,7 @@ int main() {
 
         if (choice != 5) {
              printf("\033[1;33mPress Enter to continue...\033[0m");
-             while (getchar() != '\n');
+            getchar();
             }
 
     } while(choice != 5);
