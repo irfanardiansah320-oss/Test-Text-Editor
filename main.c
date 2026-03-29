@@ -7,14 +7,15 @@
 
 int main() {
     int choice;
+
     do {
         #ifdef _WIN32
-        system("cls"); // Untuk Windows
+        system("cls");
         #else
-        system("clear"); // Untuk Linux/Mac
+        system("clear");
         #endif
-        
-        printf("\033[1;34m"); // Warna biru
+
+        printf("\033[1;34m");
         printf("===========================================\n");
         printf("|            \033[1;33mTEXT EDITOR MENU\033[1;34m             |\n");
         printf("===========================================\n");
@@ -25,42 +26,48 @@ int main() {
         printf("| \033[1;31m5. Exit Editor\033[1;34m                          |\n");
         printf("===========================================\n");
         printf("\033[1;37mEnter your choice: \033[0m");
-        scanf("%d", &choice);
 
-        // Bersihkan buffer input setelah scanf
-        while (getchar() != '\n');
+        scanf("%d", &choice);
+        while (getchar() != '\n'); // bersihin buffer
 
         switch(choice) {
             case 1:
                 createNewFile();
                 break;
+
             case 2:
                 openFile();
                 break;
+
             case 3:
                 editFile();
                 break;
-           case 4: {
-                 char filename[100];
+
+            case 4: {
+                char filename[100];
 
                 printf("Masukkan nama file: ");
-                scanf("%99s", filename);
+                fgets(filename, sizeof(filename), stdin);
+                filename[strcspn(filename, "\n")] = 0;
 
                 findAndReplace(filename);
-
                 break;
-            }   
-            break;
+            }
+
             case 5:
                 exitEditor();
                 break;
+
             default:
                 printf("\033[1;31mInvalid choice! Please try again.\033[0m\n");
         }
 
         if (choice != 5) {
             printf("\033[1;33mPress Enter to continue...\033[0m");
-            getchar(); // Tunggu Enter
+            getchar();
         }
+
     } while(choice != 5);
+
+    return 0;
 }
