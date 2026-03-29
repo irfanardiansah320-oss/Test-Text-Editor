@@ -7,7 +7,6 @@
 
 int main() {
     int choice;
-    char input[10];
 
     do {
         #ifdef _WIN32
@@ -28,9 +27,8 @@ int main() {
         printf("===========================================\n");
         printf("\033[1;37mEnter your choice: \033[0m");
 
-        // 🔥 Input pakai fgets (anti bug)
-        fgets(input, sizeof(input), stdin);
-        choice = atoi(input);
+        scanf("%d", &choice);
+        while (getchar() != '\n'); // bersihin buffer
 
         switch(choice) {
             case 1:
@@ -47,16 +45,9 @@ int main() {
 
             case 4: {
                 char filename[100];
-
                 printf("Masukkan nama file: ");
                 fgets(filename, sizeof(filename), stdin);
                 filename[strcspn(filename, "\n")] = 0;
-
-                if (strlen(filename) == 0) {
-                    printf("Nama file tidak boleh kosong!\n");
-                    break;
-                }
-
                 findAndReplace(filename);
                 break;
             }
@@ -70,9 +61,9 @@ int main() {
         }
 
         if (choice != 5) {
-            printf("\033[1;33mPress Enter to continue...\033[0m");
-            fgets(input, sizeof(input), stdin); // pause aman
-        }
+             printf("\033[1;33mPress Enter to continue...\033[0m");
+            getchar();
+            }
 
     } while(choice != 5);
 
