@@ -1,66 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "irfan1.h"
 #include "zidan.h"
-#include "rere1.h"
 
-int main() {
-    int choice;
-    do {
-        #ifdef _WIN32
-        system("cls"); // Untuk Windows
-        #else
-        system("clear"); // Untuk Linux/Mac
-        #endif
-        
-        printf("\033[1;34m"); // Warna biru
-        printf("===========================================\n");
-        printf("|            \033[1;33mTEXT EDITOR MENU\033[1;34m             |\n");
-        printf("===========================================\n");
-        printf("| \033[1;32m1. Create New File\033[1;34m                      |\n");
-        printf("| \033[1;32m2. Open File\033[1;34m                            |\n");
-        printf("| \033[1;32m3. Edit File\033[1;34m                            |\n");
-        printf("| \033[1;32m4. Find and Replace\033[1;34m                     |\n");
-        printf("| \033[1;31m5. Exit Editor\033[1;34m                          |\n");
-        printf("===========================================\n");
-        printf("\033[1;37mEnter your choice: \033[0m");
-        scanf("%d", &choice);
+void findAndReplace(char filename[]) {
+    char find[100], replace[100];
+    char buffer[1000];
+    char result[10000] = "";
 
-        // Bersihkan buffer input setelah scanf
-        while (getchar() != '\n');
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("File tidak ditemukan!\n");
+        return;
+    }
 
-        switch(choice) {
-            case 1:
-                createNewFile();
-                break;
-            case 2:
-                openFile();
-                break;
-            case 3:
-                editFile();
-                break;
-           case 4: {
-                 char filename[100];
+    printf("Kata yang ingin dicari: ");
+    fgets(find, sizeof(find), stdin);
+    find[strcspn(find, "\n")] = 0;
 
-                printf("Masukkan nama file: ");
-                scanf("%99s", filename);
+    if (strlen(find) == 0) {
+        printf("Input tidak boleh kosong!\n");
+        fclose(fp);
+        return;
+    }
 
-                findAndReplace(filename);
+    printf("Kata pengganti: ");
+    fgets(replace, sizeof(replace), stdin);
+    replace[strcspn(replace, "\n")] = 0;
 
-                break;
-            }   
-            break;
-            case 5:
-                exitEditor();
-                break;
-            default:
-                printf("\033[1;31mInvalid choice! Please try again.\033[0m\n");
+    while (fgets(buffer, sizeof(buffer), fp)) {
+        char temp[1000];
+        char *pos, *start = buffer;
+
+        while ((pos = strstr(start, find)) != NULL) {
+            strncpy(temp, start, pos - start);
+            temp[pos - start] = '\0';
+
+            strcat(result, temp);
+            strcat(result, replace);
+
+            start = pos + strlen(find);
         }
 
-        if (choice != 5) {
-            printf("\033[1;33mPress Enter to continue...\033[0m");
-            getchar(); // Tunggu Enter
-        }
-    } while(choice != 5);
+        strcat(result, start);
+    }
+
+    fclose(fp);
+
+    fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Gagal membuka file!\n");
+        return;
+    }
+
+    fputs(result, fp);
+    fclose(fp);
+
+    printf("Berhasil replace kata!\n");
 }
