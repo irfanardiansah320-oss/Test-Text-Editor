@@ -63,9 +63,9 @@ int main() {
         }
 
         if (choice != 5) {
-            printf("\033[1;33mPress Enter to continue...\033[0m");
-            getchar();
-        }
+             printf("\033[1;33mPress Enter to continue...\033[0m");
+             while (getchar() != '\n');
+            }
 
     } while(choice != 5);
 
