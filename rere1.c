@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Prototipe fungsi
 void openFile() {
     char filename[100];
     FILE *file;
@@ -18,6 +17,7 @@ void openFile() {
         return;
     }
 
+    // Tampilkan isi file
     printf("\033[1;33mFile contents:\033[0m\n");
     printf("----------------------------------------\n");
     char ch;
@@ -27,35 +27,35 @@ void openFile() {
     printf("\n----------------------------------------\n");
 
     fclose(file);
-}
 
-void editFile() {
-    char filename[100];
-    char text[1000];
-    FILE *file;
+    // Tanya user mau edit atau tidak
+    char choice;
+    printf("\nDo you want to edit this file? (y/n): ");
+    scanf(" %c", &choice);
+    getchar(); // buang newline
 
-    printf("\n\033[1;36m=== EDIT FILE ===\033[0m\n");
-    printf("Enter filename to edit: ");
-    fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\n")] = '\0';
-
-    file = fopen(filename, "w");
-    if (file == NULL) {
-        printf("\033[1;31mError saving file!\033[0m\n");
-        return;
-    }
-
-    printf("Enter your text (end with a blank line):\n");
-    printf("\033[1;32m");
-    while (1) {
-        fgets(text, sizeof(text), stdin);
-        if (strcmp(text, "\n") == 0) {
-            break;
+    if (choice == 'y' || choice == 'Y') {
+        file = fopen(filename, "w");
+        if (file == NULL) {
+            printf("\033[1;31mError opening file for editing!\033[0m\n");
+            return;
         }
-        fputs(text, file);
-    }
-    printf("\033[0m");
 
-    fclose(file);
-    printf("\033[1;32mFile '%s' saved successfully!\033[0m\n", filename);
+        char text[1000];
+        printf("Enter new content (end with blank line):\n");
+        printf("\033[1;32m");
+
+        while (1) {
+            fgets(text, sizeof(text), stdin);
+            if (strcmp(text, "\n") == 0) {
+                break;
+            }
+            fputs(text, file);
+        }
+
+        printf("\033[0m");
+        fclose(file);
+
+        printf("\033[1;32mFile '%s' updated successfully!\033[0m\n", filename);
+    }
 }
