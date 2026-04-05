@@ -35,15 +35,32 @@ void openFile() {
     getchar(); // buang newline
 
     if (choice == 'y' || choice == 'Y') {
-        file = fopen(filename, "w");
+
+        // Tampilkan lagi isi file biar user "lanjut"
+        file = fopen(filename, "r");
+        printf("\n\033[1;33mCurrent content:\033[0m\n");
+        printf("----------------------------------------\n");
+
+        while ((ch = fgetc(file)) != EOF) {
+            putchar(ch);
+        }
+
+        fclose(file);
+        printf("\n----------------------------------------\n");
+
+        // Buka mode append
+        file = fopen(filename, "a");
         if (file == NULL) {
-            printf("\033[1;31mError opening file for editing!\033[0m\n");
+            printf("\033[1;31mError opening file!\033[0m\n");
             return;
         }
 
         char text[1000];
-        printf("Enter new content (end with blank line):\n");
+        printf("Add new content (end with blank line):\n");
         printf("\033[1;32m");
+
+        // Tambahin enter biar nggak nempel
+        fputs("\n", file);
 
         while (1) {
             fgets(text, sizeof(text), stdin);
