@@ -16,15 +16,13 @@ int main() {
         #endif
 
         printf("\033[1;34m");
+        printf("            \033[1;33mTEXT EDITOR MENU\033[1;34m             \n");
         printf("===========================================\n");
-        printf("|            \033[1;33mTEXT EDITOR MENU\033[1;34m             |\n");
-        printf("===========================================\n");
-        printf("| \033[1;32m1. Create New File\033[1;34m                      |\n");
-        printf("| \033[1;32m2. Open File\033[1;34m                            |\n");
-        printf("| \033[1;32m3. Edit File\033[1;34m                            |\n");
-        printf("| \033[1;32m4. Find and Replace\033[1;34m                     |\n");
-        printf("| \033[1;31m5. Exit Editor\033[1;34m                          |\n");
-        printf("===========================================\n");
+        printf(" \033[1;32m1. Create New File\033[1;34m                      \n");
+        printf(" \033[1;32m2. Open File\033[1;34m                            \n");
+        printf(" \033[1;32m3. Edit File\033[1;34m                            \n");
+        printf(" \033[1;32m4. Find and Replace\033[1;34m                     \n");
+        printf(" \033[1;31m5. Exit Editor\033[1;34m                          \n");
         printf("\033[1;37mEnter your choice: \033[0m");
 
         scanf("%d", &choice);
@@ -44,14 +42,9 @@ int main() {
                 break;
 
             case 4: {
-                char filename[100];
-                printf("Masukkan nama file: ");
-                fgets(filename, sizeof(filename), stdin);
-                filename[strcspn(filename, "\n")] = 0;
-                findAndReplace(filename);
+                findAndReplace();
                 break;
             }
-
             case 5:
                 exitEditor();
                 break;
