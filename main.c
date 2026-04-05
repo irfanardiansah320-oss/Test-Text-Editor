@@ -1,3 +1,4 @@
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,10 +20,9 @@ int main() {
         printf("            \033[1;33mTEXT EDITOR MENU\033[1;34m             \n");
         printf("===========================================\n");
         printf(" \033[1;32m1. Create New File\033[1;34m                      \n");
-        printf(" \033[1;32m2. Open File\033[1;34m                            \n");
-        printf(" \033[1;32m3. Edit File\033[1;34m                            \n");
-        printf(" \033[1;32m4. Find and Replace\033[1;34m                     \n");
-        printf(" \033[1;31m5. Exit Editor\033[1;34m                          \n");
+        printf(" \033[1;32m2. Open File (with Edit Option)\033[1;34m         \n");
+        printf(" \033[1;32m3. Find and Replace\033[1;34m                     \n");
+        printf(" \033[1;31m4. Exit Editor\033[1;34m                          \n");
         printf("\033[1;37mEnter your choice: \033[0m");
 
         scanf("%d", &choice);
@@ -34,18 +34,14 @@ int main() {
                 break;
 
             case 2:
-                openFile();
+                openFile(); // sudah termasuk edit
                 break;
 
             case 3:
-                editFile();
-                break;
-
-            case 4: {
                 findAndReplace();
                 break;
-            }
-            case 5:
+
+            case 4:
                 exitEditor();
                 break;
 
@@ -53,12 +49,13 @@ int main() {
                 printf("\033[1;31mInvalid choice! Please try again.\033[0m\n");
         }
 
-        if (choice != 5) {
-             printf("\033[1;33mPress Enter to continue...\033[0m");
+        if (choice != 4) {
+            printf("\033[1;33mPress Enter to continue...\033[0m");
             getchar();
-            }
+        }
 
-    } while(choice != 5);
+    } while(choice != 4);
 
     return 0;
 }
+```
