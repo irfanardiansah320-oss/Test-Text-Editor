@@ -4,6 +4,7 @@
 #include "irfan1.h"
 #include "zidan.h"
 #include "rere1.h"
+#include "editor.h"
 
 int main() {
     int choice;
@@ -48,6 +49,11 @@ int main() {
             case 5:
                 exitEditor();
                 break;
+
+            case 6:
+                editorMode();
+                break;
+
 
             default:
                 printf("\033[1;31mInvalid choice! Please try again.\033[0m\n");
