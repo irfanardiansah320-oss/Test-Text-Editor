@@ -35,7 +35,7 @@ void openFile() {
     getchar(); // buang newline
 
     if (choice == 'y' || choice == 'Y') {
-        file = fopen(filename, "w");
+        file = fopen(filename, "a");
         if (file == NULL) {
             printf("\033[1;31mError opening file for editing!\033[0m\n");
             return;
