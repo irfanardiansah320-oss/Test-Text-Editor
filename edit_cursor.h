@@ -3,4 +3,5 @@
 
 void runEditor(const char *filename, int isNew);
 
+
 #endif
