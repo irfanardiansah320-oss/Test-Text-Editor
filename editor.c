@@ -39,7 +39,7 @@ void insertChar(char c) {
     cursor++;
 }
 
-// ================= DELETE =================
+// DELETE 
 void deleteChar() {
     if (cursor == 0) return;
 
@@ -52,7 +52,7 @@ void deleteChar() {
     cursor--;
 }
 
-// ================= MOVE =================
+// MOVE 
 void moveLeft() {
     if (cursor > 0) cursor--;
 }
