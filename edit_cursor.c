@@ -5,8 +5,8 @@
 #include <windows.h>
 #include "edit_cursor.h"
 
-#define MAX_ROWS 100
-#define MAX_COLS 256
+#define MAX_ROWS 10
+#define MAX_COLS 5
 
 static char text[MAX_ROWS][MAX_COLS];
 static int rowCount = 1;
