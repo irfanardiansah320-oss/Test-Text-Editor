@@ -17,7 +17,6 @@ void openFile() {
         return;
     }
 
-    // Tampilkan isi file
     printf("\033[1;33mFile contents:\033[0m\n");
     printf("----------------------------------------\n");
     char ch;
@@ -28,11 +27,10 @@ void openFile() {
 
     fclose(file);
 
-    // Tanya user mau edit atau tidak
     char choice;
     printf("\nDo you want to edit this file? (y/n): ");
     scanf(" %c", &choice);
-    getchar(); // buang newline
+    getchar(); 
 
     if (choice == 'y' || choice == 'Y') {
 
