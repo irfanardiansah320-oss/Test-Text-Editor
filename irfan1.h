@@ -4,6 +4,5 @@
 // Deklarasi fungsi-fungsi editor
 void createNewFile();
 void exitEditor ();
-void mainMenu();
 
 #endif
