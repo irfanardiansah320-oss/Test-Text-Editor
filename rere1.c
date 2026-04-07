@@ -17,7 +17,6 @@ void openFile() {
         return;
     }
 
-    // Tampilkan isi file
     printf("\033[1;33mFile contents:\033[0m\n");
     printf("----------------------------------------\n");
     char ch;
@@ -28,7 +27,7 @@ void openFile() {
     char choice;
     printf("\nApakah kamu ingin mengedit file ini dengan editor kursor? (y/n): ");
     scanf(" %c", &choice);
-    getchar();
+    getchar(); 
 
     if (choice == 'y' || choice == 'Y') {
         runEditor(filename, 0);   // 0 = file sudah ada, muat isinya
