@@ -4,17 +4,14 @@
 #include "irfan1.h"
 #include "zidan.h"
 #include "rere1.h"
-#include "editor.h"
+#include "edit_cursor.h"
 
 int main() {
     int choice;
 
     do {
-        #ifdef _WIN32
+        
         system("cls");
-        #else
-        system("clear");
-        #endif
 
         printf("\033[1;34m");
         printf("            \033[1;33mTEXT EDITOR MENU\033[1;34m             \n");
@@ -44,11 +41,6 @@ int main() {
             case 4:
                 exitEditor();
                 break;
-
-            case 6:
-                editorMode();
-                break;
-
 
             default:
                 printf("\033[1;31mInvalid choice! Please try again.\033[0m\n");
