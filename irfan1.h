@@ -4,6 +4,6 @@
 // Deklarasi fungsi-fungsi editor
 void createNewFile();
 void exitEditor ();
-void handleTextEditing(int ch, char text[][256], int *cursorRow, int *cursorCol, int *rowCount);
+void handleTextEditing(int ch, char text[][5], int *cursorRow, int *cursorCol, int *rowCount);
 
 #endif
