@@ -63,6 +63,10 @@ void findAndReplace() {
     fclose(fp);
 
     printf("Berhasil replace kata!\n");
+    // CLEAR BUFFER
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
     runEditor(filename, 0);
 }
 
