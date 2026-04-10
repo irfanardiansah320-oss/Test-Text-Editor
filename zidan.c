@@ -20,19 +20,19 @@ void findAndReplace() {
         return;
     }
 
-    printf("Kata yang ingin dicari: ");
-    fgets(find, sizeof(find), stdin);
-    find[strcspn(find, "\n")] = 0;
+    strcpy(text[0], "Kata yang ingin dicari: ");
+    strcpy(text[1], "Kata pengganti: ");
+    rowCount = 2;
+
+    runEditor(filename, 0);
+
+    strcpy(find, text[0] + strlen("Kata yang ingin dicari: "));
+    strcpy(replace, text[1] + strlen("Kata pengganti: "));
 
     if (strlen(find) == 0) {
         printf("Input tidak boleh kosong!\n");
-        fclose(fp);
         return;
     }
-
-    printf("Kata pengganti: ");
-    fgets(replace, sizeof(replace), stdin);
-    replace[strcspn(replace, "\n")] = 0;
 
     while (fgets(buffer, sizeof(buffer), fp)) {
         char temp[1000];
