@@ -13,8 +13,6 @@ void findAndReplace() {
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = 0;
 
-    runEditor(filename, 0); 
-
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         printf("File tidak ditemukan!\n");
