@@ -13,13 +13,15 @@ void findAndReplace() {
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = 0;
 
+    runEditor(filename, 0); 
+
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         printf("File tidak ditemukan!\n");
         return;
     }
 
-    runEditor(filename, 0); 
+    
     printf("Kata yang ingin dicari: ");
     fgets(find, sizeof(find), stdin);
     find[strcspn(find, "\n")] = 0;
