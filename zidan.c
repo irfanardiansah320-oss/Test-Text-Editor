@@ -19,6 +19,7 @@ void findAndReplace() {
         return;
     }
 
+    runEditor(filename, 0); 
     printf("Kata yang ingin dicari: ");
     fgets(find, sizeof(find), stdin);
     find[strcspn(find, "\n")] = 0;
