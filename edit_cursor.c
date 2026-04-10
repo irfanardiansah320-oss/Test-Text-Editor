@@ -10,8 +10,8 @@
 #define MAX_ROWS 100
 #define MAX_COLS 256
 
- char text[MAX_ROWS][MAX_COLS];
- int rowCount = 1;
+static char text[MAX_ROWS][MAX_COLS];
+static int rowCount = 1;
 static int cursorRow = 0, cursorCol = 0;
 static HANDLE hConsole;
 
