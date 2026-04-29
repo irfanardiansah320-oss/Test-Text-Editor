@@ -6,12 +6,16 @@
 
 void createNewFile() {
     char filename[100];
+
     printf("Masukkan Nama File : ");
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = '\0';
-    
-    // Langsung jalankan editor dengan file kosong
+
+    system("cls"); // 🔥 WAJIB DI SINI (sebelum masuk editor)
+
+    // masuk ke mode editor
     runEditor(filename, 1);   // 1 = file baru
+
     printf("File berhasil disimpan.\n");
 }
 

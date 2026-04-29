@@ -8,7 +8,7 @@
 #include "irfan1.h"
 
 #define MAX_ROWS 100
-#define MAX_COLS 256
+#define MAX_COLS 80
 
 static char text[MAX_ROWS][MAX_COLS];
 static int rowCount = 1;
@@ -42,15 +42,19 @@ static void saveFile(const char *filename) {
     fclose(f);
 }
 
-// Render tampilan
 static void render() {
-    system("cls");
+    COORD topLeft = {0, 0};
+    SetConsoleCursorPosition(hConsole, topLeft);
 
+    // render teks editor saja
     for (int i = 0; i < rowCount; i++) {
-        printf("%s", text[i]);
+        printf("%-*s", MAX_COLS, text[i]);
+        printf("                                        "); // clear sisa
+
         if (i < rowCount - 1) printf("\n");
     }
 
+    // pindahkan cursor ke posisi editor
     COORD pos;
     pos.X = cursorCol;
     pos.Y = cursorRow;
