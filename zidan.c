@@ -1,11 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "edit_cursor.h"
 #include "zidan.h"
 
+// int isTextAvailable(FILE *fp , char *find) {
+//     char buffer[1000];
+
+//     while (fgets(buffer, sizeof(buffer), fp)) {
+//         char temp[1000];
+//         char *pos, *start = buffer;
+
+//         while ((pos = strstr(start, find)) != NULL) {
+//             return 1;
+//         }
+//     }
+        
+//     return 0;    
+        
+// };
 void findAndReplace() {
-    char filename[100];
-    char find[100], replace[100];
+    char filename[20];
+    char find[20], replace[20];
     char buffer[1000];
     char result[10000] = "";
 
@@ -19,6 +35,7 @@ void findAndReplace() {
         return;
     }
 
+    
     printf("Kata yang ingin dicari: ");
     fgets(find, sizeof(find), stdin);
     find[strcspn(find, "\n")] = 0;
@@ -28,6 +45,13 @@ void findAndReplace() {
         fclose(fp);
         return;
     }
+    // if (isTextAvailable(fp, find) == 0) {
+    //     printf("Kata tidak ditemukan dalam file!\n");
+    //     fclose(fp);
+    //     return;
+    // }
+    
+
 
     printf("Kata pengganti: ");
     fgets(replace, sizeof(replace), stdin);
@@ -35,12 +59,12 @@ void findAndReplace() {
 
     int found = 0;
 
-    while (fgets(buffer, sizeof(buffer), fp)) {
-        char temp[1000];
-        char *pos, *start = buffer;
+while (fgets(buffer, sizeof(buffer), fp)) {
+    char temp[1000];
+    char *pos, *start = buffer;
 
     while ((pos = strstr(start, find)) != NULL) {
-        found++; 
+        found++; // penting
 
         strncpy(temp, start, pos - start);
         temp[pos - start] = '\0';
@@ -54,11 +78,12 @@ void findAndReplace() {
     strcat(result, start);
 }
 
-    fclose(fp);
-    if(found == 0) {
-        printf("Kata tidak ditemukan dalam file!\n");
-        return;
-    }
+fclose(fp);
+
+if (found == 0) {
+    printf("Kata tidak ditemukan!\n");
+    return;
+}
 
     fp = fopen(filename, "w");
     if (fp == NULL) {
@@ -74,16 +99,41 @@ void findAndReplace() {
 
 void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, char text[][256])
 {
-    if (ch == 72 && *cursorRow > 0) {
-        (*cursorRow)--; // naik
+    //ch adalah kode tombol yang ditekan, cursorRow dan cursorCol adalah pointer ke posisi kursor saat ini, rowCount adalah jumlah baris dalam teks, dan text adalah array 2D yang menyimpan teks.
+    if (ch == 72 && *cursorRow > 0) { // naik
+        (*cursorRow)--; 
+        int maxcol = (int)strlen(text[*cursorRow]);
+            if (*cursorCol > maxcol) {
+                *cursorCol = maxcol;
+            }
+        
+        
     }
-    else if (ch == 80 && *cursorRow < rowCount - 1) {
-        (*cursorRow)++; // turun
+    else if (ch == 80 && *cursorRow < rowCount - 1) { //TURUN
+        (*cursorRow)++; 
+        int maxcol = (int)strlen(text[*cursorRow]);
+            if (*cursorCol > maxcol) {
+                *cursorCol = maxcol;
+            }
+        
+        
     }
-    else if (ch == 75 && *cursorCol > 0) {
-        (*cursorCol)--; // kiri
+    else if (ch == 75 ) { // KIRI
+        if (*cursorCol > 0){
+            (*cursorCol)--;
+        }else if (*cursorCol == 0 && *cursorRow > 0) {
+            (*cursorRow)--;
+            *cursorCol = (int)strlen(text[*cursorRow]);
+        }
     }
-    else if (ch == 77 && *cursorCol < (int)strlen(text[*cursorRow])) {
-        (*cursorCol)++; // kanan
+    else if (ch == 77) {
+        if (*cursorCol < (int)strlen(text[*cursorRow])) { // KANAN
+            (*cursorCol)++;
+        }else if (*cursorCol == (int)strlen(text[*cursorRow]) && *cursorRow < rowCount - 1) { 
+            (*cursorRow)++;
+            *cursorCol = 0;
+        }
     }
 }
+
+    
