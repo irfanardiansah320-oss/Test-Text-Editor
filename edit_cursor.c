@@ -51,7 +51,10 @@ static void render() {
         if (i < rowCount - 1) printf("\n");
     }
 
-    COORD pos = {cursorCol, cursorRow};
+    COORD pos;
+    pos.X = cursorCol;
+    pos.Y = cursorRow;
+
     SetConsoleCursorPosition(hConsole, pos);
 }
 
