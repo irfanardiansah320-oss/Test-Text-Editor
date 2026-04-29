@@ -96,7 +96,7 @@ if (found == 0) {
     printf("Berhasil replace kata!\n");
 }
 
-void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, char text[][256])
+void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, char text[][MAX_COLS])
 {
     //ch adalah kode tombol yang ditekan, cursorRow dan cursorCol adalah pointer ke posisi kursor saat ini, rowCount adalah jumlah baris dalam teks, dan text adalah array 2D yang menyimpan teks.
     if (ch == 72 && *cursorRow > 0) { // naik
