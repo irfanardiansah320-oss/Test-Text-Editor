@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "edit_cursor.h"
+#include "zidan.h"
 
 // int isTextAvailable(FILE *fp , char *find) {
 //     char buffer[1000];
