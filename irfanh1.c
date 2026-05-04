@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
+#include <windows.h>          // tambahan untuk Beep
 #include "irfan1.h"
-#include "edit_cursor.h"   // tambahkan header editor kursor
+#include "edit_cursor.h"      // MAX_ROWS ada di sini
 
 void createNewFile() {
     char filename[100];
@@ -10,7 +11,6 @@ void createNewFile() {
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = '\0';
     
-    // Langsung jalankan editor dengan file kosong
     runEditor(filename, 1);   // 1 = file baru
     printf("File berhasil disimpan.\n");
 }
@@ -41,6 +41,11 @@ void handleTextEditing(int ch, char text[][150], int *cursorRow, int *cursorCol,
     }
 
     else if (ch == 13) { // enter
+        if (*rowCount >= MAX_ROWS) {
+            Beep(500, 200);   
+            return;           
+        }
+
         for (int i = *rowCount; i > *cursorRow + 1; i--)
             strcpy(text[i], text[i-1]);
         strcpy(text[*cursorRow + 1], &text[*cursorRow][*cursorCol]);
