@@ -20,7 +20,7 @@ void exitEditor() {
     exit(0);
 }
 
-void handleTextEditing(int ch, char text[][256], int *cursorRow, int *cursorCol, int *rowCount) {
+void handleTextEditing(int ch, char text[][150], int *cursorRow, int *cursorCol, int *rowCount) {
     
     if (ch == 8) { // backspace
         if (*cursorCol > 0) {
