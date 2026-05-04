@@ -3,6 +3,6 @@
 
 void createNewFile();
 void exitEditor ();
-void handleTextEditing(int ch, char text[][256], int *cursorRow, int *cursorCol, int *rowCount);
+void handleTextEditing(int ch, char text[][150], int *cursorRow, int *cursorCol, int *rowCount);
 
 #endif
