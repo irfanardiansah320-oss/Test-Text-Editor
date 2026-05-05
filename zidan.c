@@ -4,24 +4,9 @@
 #include "edit_cursor.h"
 #include "zidan.h"
 
-// int isTextAvailable(FILE *fp , char *find) {
-//     char buffer[1000];
-
-//     while (fgets(buffer, sizeof(buffer), fp)) {
-//         char temp[1000];
-//         char *pos, *start = buffer;
-
-//         while ((pos = strstr(start, find)) != NULL) {
-//             return 1;
-//         }
-//     }
-        
-//     return 0;    
-        
-// };
 void findAndReplace() {
     char filename[20];
-    char find[20], replace[20];
+    char find[100], replace[100];
     char buffer[1000];
     char result[10000] = "";
 
@@ -35,7 +20,6 @@ void findAndReplace() {
         return;
     }
 
-    
     printf("Kata yang ingin dicari: ");
     fgets(find, sizeof(find), stdin);
     find[strcspn(find, "\n")] = 0;
@@ -45,26 +29,28 @@ void findAndReplace() {
         fclose(fp);
         return;
     }
-    // if (isTextAvailable(fp, find) == 0) {
-    //     printf("Kata tidak ditemukan dalam file!\n");
-    //     fclose(fp);
-    //     return;
-    // }
-    
-
 
     printf("Kata pengganti: ");
     fgets(replace, sizeof(replace), stdin);
     replace[strcspn(replace, "\n")] = 0;
 
+    if (strlen(replace) > 20) {
+         printf("\n[!] Peringatan: kata pengganti maksimal 20 karakter!\n");
+        return;
+    }
+
+    if (strchr(replace, '\n') == NULL) {
+        while (getchar() != '\n');
+    }
+
     int found = 0;
 
-while (fgets(buffer, sizeof(buffer), fp)) {
-    char temp[1000];
-    char *pos, *start = buffer;
+    while (fgets(buffer, sizeof(buffer), fp)) {
+        char temp[1000];
+        char *pos, *start = buffer;
 
     while ((pos = strstr(start, find)) != NULL) {
-        found++; // penting
+        found++; 
 
         strncpy(temp, start, pos - start);
         temp[pos - start] = '\0';
@@ -78,12 +64,11 @@ while (fgets(buffer, sizeof(buffer), fp)) {
     strcat(result, start);
 }
 
-fclose(fp);
-
-if (found == 0) {
-    printf("Kata tidak ditemukan!\n");
-    return;
-}
+    fclose(fp);
+    if(found == 0) {
+        printf("Kata tidak ditemukan dalam file!\n");
+        return;
+    }
 
     fp = fopen(filename, "w");
     if (fp == NULL) {
