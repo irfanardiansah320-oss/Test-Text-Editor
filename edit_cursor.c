@@ -87,7 +87,7 @@ void runEditor(const char *filename, int isNew) { //Fungsi dibuat oleh Rayhan
 
         if (ch == 224) { // Memanggil fungsi cursor movement dari zidan.c
             ch = _getch();
-            handleCursorMovement(ch, &cursorRow, &cursorCol, rowCount, text);
+            void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, Node *head);
         }
 
         else {

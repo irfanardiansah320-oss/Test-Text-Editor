@@ -9,14 +9,13 @@ void findAndReplace() {
     char filename[20];
     char find[100], replace[100];
     char buffer[1000];
-    char result[10000] = "";
 
     printf("Masukkan nama file: ");
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = 0;
 
     FILE *fp = fopen(filename, "r");
-    if (fp == NULL) {
+    if (!fp) {
         printf("File tidak ditemukan!\n");
         return;
     }
@@ -25,6 +24,7 @@ void findAndReplace() {
     fgets(find, sizeof(find), stdin);
     find[strcspn(find, "\n")] = 0;
 
+    // VALIDASI INPUT KOSONG
     if (strlen(find) == 0) {
         printf("Input tidak boleh kosong!\n");
         fclose(fp);
@@ -35,84 +35,143 @@ void findAndReplace() {
     fgets(replace, sizeof(replace), stdin);
     replace[strcspn(replace, "\n")] = 0;
 
+    // VALIDASI PANJANG REPLACE
     if (strlen(replace) > 20) {
-         printf("\n[!] Peringatan: kata pengganti maksimal 20 karakter!\n");
+        printf("\n[!] Peringatan: kata pengganti maksimal 20 karakter!\n");
+        fclose(fp);
         return;
     }
 
-    if (strchr(replace, '\n') == NULL) {
-        while (getchar() != '\n');
-    }
-
-    int found = 0;
-
+    // LINKED LIST
+    Node *head = NULL;
     while (fgets(buffer, sizeof(buffer), fp)) {
+        appendNode(&head, buffer);
+    }
+    fclose(fp);
+
+    // FIND & REPLACE
+    int found = 0;
+    Node *curr = head;
+
+    while (curr != NULL) {
+        char result[1000] = "";
         char temp[1000];
-        char *pos, *start = buffer;
+        char *pos;
+        char *start = curr->line;
 
-    while ((pos = strstr(start, find)) != NULL) {
-        found++; 
+        while ((pos = strstr(start, find)) != NULL) {
+            found++;
+            
+            strncpy(temp, start, pos - start);
+            temp[pos - start] = '\0';
+            strcat(result, temp);
+            strcat(result, replace);
+            start = pos + strlen(find);
+        }
 
-        strncpy(temp, start, pos - start);
-        temp[pos - start] = '\0';
-
-        strcat(result, temp);
-        strcat(result, replace);
-
-        start = pos + strlen(find);
+        strcat(result, start);
+        strcpy(curr->line, result);
+        curr = curr->next;
     }
 
-    strcat(result, start);
-}
-
-    fclose(fp);
-    if(found == 0) {
+    // VALIDASI KATA TIDAK DITEMUKAN
+    if (found == 0) {
         printf("Kata tidak ditemukan dalam file!\n");
+        freeList(head);
         return;
     }
+    // =========================
+    // SAVE FILE
+    // =========================
 
     fp = fopen(filename, "w");
-    if (fp == NULL) {
+    if (!fp) {
         printf("Gagal membuka file!\n");
+        freeList(head);
         return;
     }
 
-    fputs(result, fp);
+    curr = head;
+    while (curr != NULL) {
+        fputs(curr->line, fp);
+        curr = curr->next;
+    }
     fclose(fp);
 
     printf("Berhasil replace kata!\n");
-}
+    // =========================
+    // FREE MEMORY
+    // =========================
 
-void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, char text[][MAX_COLS])
+    freeList(head);
+}
+void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, Node *head)
 {
-    if (ch == 72 && *cursorRow > 0) { // naik
-        (*cursorRow)--; 
-        int maxcol = (int)strlen(text[*cursorRow]);
-            if (*cursorCol > maxcol) {
-                *cursorCol = maxcol;
-            }    
+    Node *curr = getNodeAt(head, *cursorRow);
+
+    // ATAS
+    if (ch == 72 && *cursorRow > 0) {
+
+        (*cursorRow)--;
+
+        curr = getNodeAt(head, *cursorRow);
+
+        int maxcol = strlen(curr->line);
+
+        if (*cursorCol > maxcol)
+            *cursorCol = maxcol;
     }
-    else if (ch == 80 && *cursorRow < rowCount - 1) { //TURUN
-        (*cursorRow)++; 
-        int maxcol = (int)strlen(text[*cursorRow]);
-            if (*cursorCol > maxcol) {
+
+    // BAWAH
+    else if (ch == 80) {
+
+        Node *next = getNodeAt(head, *cursorRow + 1);
+
+        if (next != NULL) {
+
+            (*cursorRow)++;
+
+            int maxcol = strlen(next->line);
+
+            if (*cursorCol > maxcol)
                 *cursorCol = maxcol;
-            }    
-    }
-    else if (ch == 75 ) { // KIRI
-        if (*cursorCol > 0){
-            (*cursorCol)--;
-        }else if (*cursorCol == 0 && *cursorRow > 0) {
-            (*cursorRow)--;
-            *cursorCol = (int)strlen(text[*cursorRow]);
         }
     }
+
+    // KIRI
+    else if (ch == 75) {
+
+        if (*cursorCol > 0) {
+            (*cursorCol)--;
+        }
+        else if (*cursorRow > 0) {
+
+            (*cursorRow)--;
+
+            curr = getNodeAt(head, *cursorRow);
+
+            *cursorCol = strlen(curr->line);
+        }
+    }
+
+    // KANAN
     else if (ch == 77) {
-        if (*cursorCol < (int)strlen(text[*cursorRow])) { // KANAN
+
+        int len = strlen(curr->line);
+
+        if (*cursorCol < len) {
             (*cursorCol)++;
-        }else if (*cursorCol == (int)strlen(text[*cursorRow]) && *cursorRow < rowCount - 1) { 
-            (*cursorRow)++;
-            *cursorCol = 0;
+        }
+        else {
+
+            Node *next = getNodeAt(head, *cursorRow + 1);
+
+            if (next != NULL) {
+
+                (*cursorRow)++;
+
+                *cursorCol = 0;
+            }
         }
     }
 }
