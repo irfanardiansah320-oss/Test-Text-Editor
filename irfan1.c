@@ -20,7 +20,7 @@ void exitEditor() {
     exit(0);
 }
 
-void handleTextEditing(int ch, char text[][150], int *cursorRow, int *cursorCol, int *rowCount) {
+void handleTextEditing(int ch, char text[][MAX_COLS], int *cursorRow, int *cursorCol, int *rowCount) {
     
     if (ch == 8) { // backspace
         if (*cursorCol > 0) {
@@ -42,7 +42,7 @@ void handleTextEditing(int ch, char text[][150], int *cursorRow, int *cursorCol,
 
     else if (ch == 13) { // enter
         if (*rowCount >= MAX_ROWS) {
-            Beep(500, 200);   
+            printf("Sudah mencapai batas");   
             return;           
         }
 
@@ -56,6 +56,15 @@ void handleTextEditing(int ch, char text[][150], int *cursorRow, int *cursorCol,
     }
 
     else if (ch >= 32 && ch <= 126) { // input karakter
+    if (*cursorCol >= MAX_COLS - 1) {          
+        for (int i = *rowCount; i > *cursorRow + 1; i--)
+            strcpy(text[i], text[i-1]);
+        strcpy(text[*cursorRow + 1], &text[*cursorRow][*cursorCol]);
+        text[*cursorRow][*cursorCol] = '\0';
+        (*rowCount)++;
+        (*cursorRow)++;
+        *cursorCol = 0;
+    }
         int len = strlen(text[*cursorRow]);
         for (int i = len; i >= *cursorCol; i--)
             text[*cursorRow][i+1] = text[*cursorRow][i];

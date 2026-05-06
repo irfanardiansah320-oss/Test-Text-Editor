@@ -4,6 +4,7 @@
 #include "edit_cursor.h"
 #include "zidan.h"
 
+
 void findAndReplace() {
     char filename[20];
     char find[100], replace[100];
@@ -82,26 +83,21 @@ void findAndReplace() {
     printf("Berhasil replace kata!\n");
 }
 
-void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, char text[][150])
+void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, char text[][MAX_COLS])
 {
-    //ch adalah kode tombol yang ditekan, cursorRow dan cursorCol adalah pointer ke posisi kursor saat ini, rowCount adalah jumlah baris dalam teks, dan text adalah array 2D yang menyimpan teks.
     if (ch == 72 && *cursorRow > 0) { // naik
         (*cursorRow)--; 
         int maxcol = (int)strlen(text[*cursorRow]);
             if (*cursorCol > maxcol) {
                 *cursorCol = maxcol;
-            }
-        
-        
+            }    
     }
     else if (ch == 80 && *cursorRow < rowCount - 1) { //TURUN
         (*cursorRow)++; 
         int maxcol = (int)strlen(text[*cursorRow]);
             if (*cursorCol > maxcol) {
                 *cursorCol = maxcol;
-            }
-        
-        
+            }    
     }
     else if (ch == 75 ) { // KIRI
         if (*cursorCol > 0){
@@ -120,5 +116,3 @@ void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, int rowCount, 
         }
     }
 }
-
-    
