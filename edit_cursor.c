@@ -47,6 +47,7 @@ static void saveLinkedListToFile(const char *filename) {
 // Render seluruh layar dari linked list
 static void render() {
     COORD topLeft = {0, 0};
+
     SetConsoleCursorPosition(hConsole, topLeft);
     Node *curr = editorHead;
     int row = 0;
@@ -61,6 +62,7 @@ static void render() {
     printf("\x1b[J");
     // Posisikan kursor
     COORD pos = {cursorCol, cursorRow};
+
     SetConsoleCursorPosition(hConsole, pos);
 }
 

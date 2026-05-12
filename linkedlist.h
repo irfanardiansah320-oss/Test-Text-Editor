@@ -1,7 +1,7 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
-#define MAX_COLS 256
+#define MAX_COLS 100
 
 // =========================
 // STRUCT NODE
