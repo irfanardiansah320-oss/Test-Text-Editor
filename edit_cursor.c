@@ -7,10 +7,10 @@
 #include "zidan.h"
 #include "irfan1.h"
 
- char text[MAX_ROWS][MAX_COLS];
- int rowCount = 1;
- int cursorRow = 0, cursorCol = 0;
- HANDLE hConsole;
+ Node *head = NULL;
+int cursorRow = 0;
+int cursorCol = 0;
+HANDLE hConsole;
 
  void loadFile(const char *filename) { //Fungsi dibuat oleh Rayhan
     FILE *f = fopen(filename, "r");
@@ -36,27 +36,32 @@
     fclose(f);
 }
 
- void render() { 
+ void render() {
 
-    // pindahkan cursor ke pojok kiri atas (0,0)
     COORD topLeft = {0, 0};
+
     SetConsoleCursorPosition(hConsole, topLeft);
 
-    for (int i = 0; i < rowCount; i++) {
-        printf("%s", text[i]);
+    Node *curr = head;
 
-        // hapus sisa karakter di baris
+    while (curr != NULL) {
+
+        printf("%s", curr->line);
+
         printf("\x1b[K");
 
-        if (i < rowCount - 1) printf("\n");
+        if (curr->next != NULL) {
+
+            printf("\n");
+        }
+
+        curr = curr->next;
     }
 
-    // kalau jumlah baris sekarang lebih sedikit dari sebelumnya,
-    // bersihkan sisa layar di bawah
     printf("\x1b[J");
 
-    // kembalikan cursor ke posisi semula
     COORD pos = {cursorCol, cursorRow};
+
     SetConsoleCursorPosition(hConsole, pos);
 }
 
