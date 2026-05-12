@@ -4,74 +4,116 @@
 #include <conio.h>
 #include <windows.h>
 #include "edit_cursor.h"
-#include "zidan.h"
-#include "irfan1.h"
+#include "zidan.h"      // untuk handleCursorMovement
+#include "irfan1.h"     // untuk handleTextEditing (akan kita ubah juga nanti)
 
- char text[MAX_ROWS][MAX_COLS];
- int rowCount = 1;
- int cursorRow = 0, cursorCol = 0;
- HANDLE hConsole;
+static HANDLE hConsole;
+static Node *editorHead = NULL;     // linked list yang sedang diedit
+static int cursorRow = 0;           // indeks baris (0-based)
+static int cursorCol = 0;           // kolom dalam baris
+static int rowCount = 0;             // jumlah baris (cache, bisa didapat dari getRowCount)
 
- void loadFile(const char *filename) { //Fungsi dibuat oleh Rayhan
+// Memuat file ke dalam linked list
+static void loadFileToLinkedList(const char *filename) {
     FILE *f = fopen(filename, "r");
     if (!f) return;
-    rowCount = 0;
-    while (rowCount < MAX_ROWS && fgets(text[rowCount], MAX_COLS, f)) {
-        text[rowCount][strcspn(text[rowCount], "\n")] = '\0';
-        rowCount++;
+    char buffer[MAX_COLS];
+    while (fgets(buffer, MAX_COLS, f)) {
+        buffer[strcspn(buffer, "\n")] = '\0';
+        appendNode(&editorHead, buffer);
     }
     fclose(f);
-    if (rowCount == 0) rowCount = 1;
+    rowCount = getRowCount(editorHead);
+    if (rowCount == 0) {
+        // file kosong: buat satu baris kosong
+        appendNode(&editorHead, "");
+        rowCount = 1;
+    }
 }
 
-// Simpan file
- void saveFile(const char *filename) { //Fungsi dibuat oleh Irfan
+// Menyimpan linked list ke file
+static void saveLinkedListToFile(const char *filename) {
     FILE *f = fopen(filename, "w");
     if (!f) return;
-
-    for (int i = 0; i < rowCount; i++) {
-        fprintf(f, "%s", text[i]);
-        if (i < rowCount - 1) fprintf(f, "\n");
+    Node *curr = editorHead;
+    while (curr != NULL) {
+        fprintf(f, "%s", curr->line);
+        if (curr->next != NULL) fprintf(f, "\n");
+        curr = curr->next;
     }
     fclose(f);
 }
 
- void render() { 
-
-    // pindahkan cursor ke pojok kiri atas (0,0)
+// Render seluruh layar dari linked list
+static void render() {
     COORD topLeft = {0, 0};
     SetConsoleCursorPosition(hConsole, topLeft);
-
-    for (int i = 0; i < rowCount; i++) {
-        printf("%s", text[i]);
-
-        // hapus sisa karakter di baris
-        printf("\x1b[K");
-
-        if (i < rowCount - 1) printf("\n");
+    Node *curr = editorHead;
+    int row = 0;
+    while (curr != NULL) {
+        printf("%s", curr->line);
+        printf("\x1b[K");   // hapus sampai akhir baris
+        if (curr->next != NULL) printf("\n");
+        curr = curr->next;
+        row++;
     }
-
-    // kalau jumlah baris sekarang lebih sedikit dari sebelumnya,
-    // bersihkan sisa layar di bawah
+    // Jika jumlah baris berkurang, bersihkan sisa layar
     printf("\x1b[J");
-
-    // kembalikan cursor ke posisi semula
+    // Posisikan kursor
     COORD pos = {cursorCol, cursorRow};
     SetConsoleCursorPosition(hConsole, pos);
 }
 
-// Fungsi utama editor
-void runEditor(const char *filename, int isNew) { //Fungsi dibuat oleh Rayhan
+// Menyisipkan baris baru pada posisi tertentu (0-based)
+static void insertRowAt(int index, const char *content) {
+    if (index < 0) index = 0;
+    if (index > rowCount) index = rowCount;
+    Node *newNode = createNode(content);
+    if (index == 0) {
+        newNode->next = editorHead;
+        editorHead = newNode;
+    } else {
+        Node *prev = getNodeAt(editorHead, index - 1);
+        newNode->next = prev->next;
+        prev->next = newNode;
+    }
+    rowCount++;
+}
+
+// Menghapus baris pada indeks tertentu
+static void deleteRowAt(int index) {
+    if (index < 0 || index >= rowCount) return;
+    Node *temp;
+    if (index == 0) {
+        temp = editorHead;
+        editorHead = editorHead->next;
+    } else {
+        Node *prev = getNodeAt(editorHead, index - 1);
+        temp = prev->next;
+        prev->next = temp->next;
+    }
+    free(temp);
+    rowCount--;
+}
+
+// Mendapatkan pointer ke baris (Node) pada indeks tertentu
+static Node* getRowNode(int index) {
+    return getNodeAt(editorHead, index);
+}
+
+// Fungsi utama editor (menggantikan yang lama)
+void runEditor(Node **head, const char *filename, int isNew) {
+    // Gunakan linked list dari parameter
+    editorHead = *head;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     
-    // Inisialisasi buffer
-    if (!isNew) {
-        loadFile(filename);
-    } else {
-        // file baru: kosongkan semua baris
-        for (int i = 0; i < MAX_ROWS; i++) text[i][0] = '\0';
-        rowCount = 1;
+    if (!isNew && editorHead == NULL) {
+        loadFileToLinkedList(filename);
+    } else if (isNew && editorHead == NULL) {
+        // file baru: satu baris kosong
+        appendNode(&editorHead, "");
     }
+    rowCount = getRowCount(editorHead);
     cursorRow = 0;
     cursorCol = 0;
     
@@ -80,18 +122,30 @@ void runEditor(const char *filename, int isNew) { //Fungsi dibuat oleh Rayhan
         render();
         ch = _getch();
         
-        if (ch == 27) { // ESC untuk keluar dan simpan, dibuat oleh Rayhan
-            saveFile(filename);
+        if (ch == 27) { // ESC -> simpan dan keluar
+            saveLinkedListToFile(filename);
             break;
         }
-
-        if (ch == 224) { // Memanggil fungsi cursor movement dari zidan.c
+        
+        if (ch == 224) { // tombol panah
             ch = _getch();
-            void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, Node *head);
-        }
-
-        else {
-            handleTextEditing(ch, text, &cursorRow, &cursorCol, &rowCount); //Memanggil fungsi handleTextEditing dari irfan1.c
+            // Panggil fungsi handleCursorMovement yang sudah ada di zidan.c
+            // Fungsi tersebut perlu menerima Node* head, cursorRow, cursorCol
+            handleCursorMovement(ch, &cursorRow, &cursorCol, editorHead);
+            // setelah kursor pindah, pastikan cursorCol tidak melebihi panjang baris
+            Node *currRow = getRowNode(cursorRow);
+            if (currRow && cursorCol > (int)strlen(currRow->line))
+                cursorCol = strlen(currRow->line);
+        } else {
+            // Edit teks: kita perlu mengirim editorHead, baris, kolom, rowCount
+            // Namun handleTextEditing di irfan1.c masih menggunakan array statis.
+            // Kita harus mengubah irfan1.c juga (lihat penjelasan di bawah)
+            // Untuk sementara, kita buat fungsi internal di sini.
+            // Karena akan mengubah irfan1.c, kita panggil versi baru.
+            handleTextEditingLinkedList(ch, &editorHead, &cursorRow, &cursorCol, &rowCount);
         }
     }
+    
+    // Kembalikan head yang sudah dimodifikasi ke pemanggil
+    *head = editorHead;
 }
