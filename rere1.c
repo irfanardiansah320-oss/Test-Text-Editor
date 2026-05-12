@@ -8,7 +8,7 @@
 // EDITOR BERBASIS LINKED LIST
 // =========================
 
-static void tampilkanNode(Node *head) {
+void tampilkanNode(Node *head) {
     if (head == NULL) {
         printf("(Kosong)\n");
         return;
@@ -21,7 +21,7 @@ static void tampilkanNode(Node *head) {
     }
 }
 
-static void simpanKeFile(Node *head, const char *filename) {
+    void simpanKeFile(Node *head, const char *filename) {
     FILE *f = fopen(filename, "w");
     if (f == NULL) {
         printf("\033[1;31mGagal menyimpan file!\033[0m\n");
@@ -37,7 +37,7 @@ static void simpanKeFile(Node *head, const char *filename) {
     printf("\033[1;32mFile '%s' telah disimpan.\033[0m\n", filename);
 }
 
-static void editLinkedList(Node **head, const char *filename) {
+    void editLinkedList(Node **head, const char *filename) {
     int pilihan;
     do {
         system("cls");

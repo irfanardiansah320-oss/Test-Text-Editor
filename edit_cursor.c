@@ -7,12 +7,12 @@
 #include "zidan.h"
 #include "irfan1.h"
 
-static char text[MAX_ROWS][MAX_COLS];
-static int rowCount = 1;
-static int cursorRow = 0, cursorCol = 0;
-static HANDLE hConsole;
+ char text[MAX_ROWS][MAX_COLS];
+ int rowCount = 1;
+ int cursorRow = 0, cursorCol = 0;
+ HANDLE hConsole;
 
-static void loadFile(const char *filename) { //Fungsi dibuat oleh Rayhan
+ void loadFile(const char *filename) { //Fungsi dibuat oleh Rayhan
     FILE *f = fopen(filename, "r");
     if (!f) return;
     rowCount = 0;
@@ -25,7 +25,7 @@ static void loadFile(const char *filename) { //Fungsi dibuat oleh Rayhan
 }
 
 // Simpan file
-static void saveFile(const char *filename) { //Fungsi dibuat oleh Irfan
+ void saveFile(const char *filename) { //Fungsi dibuat oleh Irfan
     FILE *f = fopen(filename, "w");
     if (!f) return;
 
@@ -36,7 +36,7 @@ static void saveFile(const char *filename) { //Fungsi dibuat oleh Irfan
     fclose(f);
 }
 
-static void render() { 
+ void render() { 
 
     // pindahkan cursor ke pojok kiri atas (0,0)
     COORD topLeft = {0, 0};
