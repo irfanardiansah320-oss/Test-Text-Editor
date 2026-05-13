@@ -5,9 +5,7 @@
 #include "edit_cursor.h"      // untuk fungsi runEditor, dll.
 #include "linkedlist.h"       // Node, MAX_COLS, createNode, appendNode, getNodeAt, freeList
 
-// ====================================================
 // Fungsi pembantu lokal (insert & delete node di tengah)
-// ====================================================
 void insertNodeLocal(Node **head, int index, const char line[]) {
     Node *newNode = createNode(line);
     if (index == 0 || *head == NULL) {
@@ -39,16 +37,15 @@ void deleteNodeLocal(Node **head, int index) {
     free(toDelete);
 }
 
-// ====================================================
-// createNewFile & exitEditor (tidak berubah)
-// ====================================================
+
+// createNewFile & exitEditor
 void createNewFile() {
     char filename[100];
     printf("Masukkan Nama File : ");
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = '\0';
     
-    runEditor(filename, 1);   // pastikan runEditor sudah pakai linked list
+    runEditor(filename, 1);   
     printf("File berhasil disimpan.\n");
 }
 
@@ -57,14 +54,12 @@ void exitEditor() {
     exit(0);
 }
 
-// ====================================================
 // handleTextEditing VERSI LINKED LIST (TANPA MAX_ROWS)
-// ====================================================
 void handleTextEditing(int ch, Node **head, int *cursorRow, int *cursorCol, int *rowCount) {
     Node *curr = getNodeAt(*head, *cursorRow);
     if (curr == NULL) return;
 
-    // ========= BACKSPACE =========
+    //  BACKSPACE 
     if (ch == 8) {
         if (*cursorCol > 0) {
             // hapus karakter di dalam baris
@@ -94,7 +89,7 @@ void handleTextEditing(int ch, Node **head, int *cursorRow, int *cursorCol, int 
         }
     }
 
-    // ========= ENTER =========
+    //  ENTER 
     else if (ch == 13) {
         // TIDAK ADA PENGECEKAN MAX_ROWS! Linked list bisa terus tumbuh.
         char tail[MAX_COLS] = "";
@@ -109,7 +104,7 @@ void handleTextEditing(int ch, Node **head, int *cursorRow, int *cursorCol, int 
         (*rowCount)++;
     }
 
-    // ========= KARAKTER BIASA (ASCII 32-126) =========
+    //  KARAKTER BIASA (ASCII 32-126) 
     else if (ch >= 32 && ch <= 126) {
         // Jika kolom mentok, buat baris baru (word-wrap)
         if (*cursorCol >= MAX_COLS - 1) {
