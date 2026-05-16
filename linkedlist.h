@@ -11,6 +11,7 @@ typedef struct Node {
     char line[MAX_COLS];
 
     struct Node *next;
+    struct Node *prev;
   
 } Node;
 

@@ -105,73 +105,88 @@ void findAndReplace() {
 
     freeList(head);
 }
-void handleCursorMovement(int ch, int *cursorRow, int *cursorCol, Node *head)
+void handleCursorMovement(
+    int ch,
+    int *cursorRow,
+    int *cursorCol,
+    Node **currentLine
+)
 {
-    Node *curr = getNodeAt(head, *cursorRow);
-
     // ATAS
-    if (ch == 72 && *cursorRow > 0) {
+    if (ch == 72) {
 
-        (*cursorRow)--;
+        if ((*currentLine)->prev != NULL) {
 
-        curr = getNodeAt(head, *cursorRow);
+            *currentLine = (*currentLine)->prev;
 
-        int maxcol = strlen(curr->line);
+            (*cursorRow)--;
 
-        if (*cursorCol > maxcol)
-            *cursorCol = maxcol;
+            int len = strlen((*currentLine)->line);
+
+            if (*cursorCol > len) {
+
+                *cursorCol = len;
+            }
+        }
     }
 
     // BAWAH
     else if (ch == 80) {
 
-        Node *next = getNodeAt(head, *cursorRow + 1);
+        if ((*currentLine)->next != NULL) {
 
-        if (next != NULL) {
+            *currentLine = (*currentLine)->next;
 
             (*cursorRow)++;
 
-            int maxcol = strlen(next->line);
+            int len = strlen((*currentLine)->line);
 
-            if (*cursorCol > maxcol)
-                *cursorCol = maxcol;
+            if (*cursorCol > len) {
+
+                *cursorCol = len;
+            }
         }
     }
 
     // KIRI
     else if (ch == 75) {
 
+        // masih dalam baris
         if (*cursorCol > 0) {
+
             (*cursorCol)--;
         }
-        else if (*cursorRow > 0) {
+
+        // pindah ke akhir baris atas
+        else if ((*currentLine)->prev != NULL) {
+
+            *currentLine = (*currentLine)->prev;
 
             (*cursorRow)--;
 
-            curr = getNodeAt(head, *cursorRow);
-
-            *cursorCol = strlen(curr->line);
+            *cursorCol = strlen((*currentLine)->line);
         }
     }
 
     // KANAN
     else if (ch == 77) {
 
-        int len = strlen(curr->line);
+        int len = strlen((*currentLine)->line);
 
+        // masih dalam baris
         if (*cursorCol < len) {
+
             (*cursorCol)++;
         }
-        else {
 
-            Node *next = getNodeAt(head, *cursorRow + 1);
+        // pindah ke awal baris bawah
+        else if ((*currentLine)->next != NULL) {
 
-            if (next != NULL) {
+            *currentLine = (*currentLine)->next;
 
-                (*cursorRow)++;
+            (*cursorRow)++;
 
-                *cursorCol = 0;
-            }
+            *cursorCol = 0;
         }
     }
 }

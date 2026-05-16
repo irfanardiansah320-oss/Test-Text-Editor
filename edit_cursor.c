@@ -8,6 +8,7 @@
 #include "irfan1.h"
 
  Node *head = NULL;
+ Node *currentLine = NULL;  
 int cursorRow = 0;
 int cursorCol = 0;
 HANDLE hConsole;

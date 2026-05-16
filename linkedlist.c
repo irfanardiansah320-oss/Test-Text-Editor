@@ -15,6 +15,7 @@ Node* createNode(char line[]) {
     strcpy(newNode->line, line);
 
     newNode->next = NULL;
+    newNode->prev = NULL;
 
     return newNode;
 }
@@ -46,6 +47,7 @@ void appendNode(Node **head, char line[]) {
 
     // sambungkan node baru
     curr->next = newNode;
+    newNode->prev = curr;
 }
 
 
