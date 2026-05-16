@@ -4,189 +4,144 @@
 #include "edit_cursor.h"
 #include "zidan.h"
 
+void handleCursorMovement(int ch, Cursor *cur) {
+    int currentLen = (int)strlen(cur->current->data);
+
+    if (ch == 72) {
+        /* ---- PANAH ATAS ---- */
+        /* Syarat: harus ada baris di atas (prev != NULL) */
+        if (cur->current->prev != NULL) {
+            cur->current = cur->current->prev;  /* ikuti pointer prev */
+            cur->cursorRow--;
+
+            /* Clamp kolom: jika baris baru lebih pendek,
+             * cursor tidak boleh melewati akhir baris */
+            int newLen = (int)strlen(cur->current->data);
+            if (cur->cursorCol > newLen) {
+                cur->cursorCol = newLen;
+            }
+        }
+    }
+    else if (ch == 80) {
+        /* ---- PANAH BAWAH ---- */
+        /* Syarat: harus ada baris di bawah (next != NULL) */
+        if (cur->current->next != NULL) {
+            cur->current = cur->current->next;  /* ikuti pointer next */
+            cur->cursorRow++;
+
+            /* Clamp kolom */
+            int newLen = (int)strlen(cur->current->data);
+            if (cur->cursorCol > newLen) {
+                cur->cursorCol = newLen;
+            }
+        }
+    }
+    else if (ch == 75) {
+        /* ---- PANAH KIRI ---- */
+        if (cur->cursorCol > 0) {
+            /* Masih ada karakter di kiri dalam baris yang sama */
+            cur->cursorCol--;
+        }
+        else if (cur->current->prev != NULL) {
+            /* Sudah di kolom 0: pindah ke akhir baris SEBELUMNYA */
+            cur->current   = cur->current->prev;
+            cur->cursorRow--;
+            cur->cursorCol = (int)strlen(cur->current->data);
+        }
+        /* Jika di baris pertama kolom 0: tidak bergerak */
+    }
+    else if (ch == 77) {
+        /* ---- PANAH KANAN ---- */
+        if (cur->cursorCol < currentLen) {
+            /* Masih ada karakter di kanan dalam baris yang sama */
+            cur->cursorCol++;
+        }
+        else if (cur->current->next != NULL) {
+            /* Sudah di akhir baris: pindah ke awal baris BERIKUTNYA */
+            cur->current   = cur->current->next;
+            cur->cursorRow++;
+            cur->cursorCol = 0;
+        }
+        /* Jika di baris terakhir kolom akhir: tidak bergerak */
+    }
+}
 
 void findAndReplace() {
-    char filename[20];
+    char filename[100];
     char find[100], replace[100];
     char buffer[1000];
+    char result[100000] = "";   /* buffer hasil lebih besar */
 
-    printf("Masukkan nama file: ");
+    printf("\n\033[1;36m=== FIND AND REPLACE ===\033[0m\n");
+
+    printf("Masukkan nama file  : ");
     fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\n")] = 0;
+    filename[strcspn(filename, "\n")] = '\0';
 
     FILE *fp = fopen(filename, "r");
-    if (!fp) {
-        printf("File tidak ditemukan!\n");
+    if (fp == NULL) {
+        printf("\033[1;31mFile '%s' tidak ditemukan!\033[0m\n", filename);
         return;
     }
 
-    printf("Kata yang ingin dicari: ");
+    printf("Kata yang dicari    : ");
     fgets(find, sizeof(find), stdin);
-    find[strcspn(find, "\n")] = 0;
+    find[strcspn(find, "\n")] = '\0';
 
-    // VALIDASI INPUT KOSONG
     if (strlen(find) == 0) {
         printf("Input tidak boleh kosong!\n");
         fclose(fp);
         return;
     }
 
-    printf("Kata pengganti: ");
+    printf("Kata pengganti      : ");
     fgets(replace, sizeof(replace), stdin);
-    replace[strcspn(replace, "\n")] = 0;
+    replace[strcspn(replace, "\n")] = '\0';
 
-    // VALIDASI PANJANG REPLACE
-    if (strlen(replace) > 20) {
-        printf("\n[!] Peringatan: kata pengganti maksimal 20 karakter!\n");
+    if (strlen(replace) > 50) {
+        printf("\n[!] Kata pengganti maksimal 50 karakter!\n");
         fclose(fp);
         return;
     }
 
-    // LINKED LIST
-    Node *head = NULL;
-    while (fgets(buffer, sizeof(buffer), fp)) {
-        appendNode(&head, buffer);
-    }
-    fclose(fp);
-
-    // FIND & REPLACE
     int found = 0;
-    Node *curr = head;
 
-    while (curr != NULL) {
-        char result[1000] = "";
+    while (fgets(buffer, sizeof(buffer), fp)) {
         char temp[1000];
-        char *pos;
-        char *start = curr->line;
+        char *pos, *start = buffer;
 
         while ((pos = strstr(start, find)) != NULL) {
             found++;
-            
+
+            /* salin bagian sebelum kata yang ditemukan */
             strncpy(temp, start, pos - start);
             temp[pos - start] = '\0';
+
             strcat(result, temp);
             strcat(result, replace);
+
             start = pos + strlen(find);
         }
-
+        /* salin sisa baris setelah penggantian terakhir */
         strcat(result, start);
-        strcpy(curr->line, result);
-        curr = curr->next;
     }
 
-    // VALIDASI KATA TIDAK DITEMUKAN
-    if (found == 0) {
-        printf("Kata tidak ditemukan dalam file!\n");
-        freeList(head);
-        return;
-    }
-    // =========================
-    // SAVE FILE
-    // =========================
-
-    fp = fopen(filename, "w");
-    if (!fp) {
-        printf("Gagal membuka file!\n");
-        freeList(head);
-        return;
-    }
-
-    curr = head;
-    while (curr != NULL) {
-        fputs(curr->line, fp);
-        curr = curr->next;
-    }
     fclose(fp);
 
-    printf("Berhasil replace kata!\n");
-    // =========================
-    // FREE MEMORY
-    // =========================
-
-    freeList(head);
-}
-void handleCursorMovement(
-    int ch,
-    int *cursorRow,
-    int *cursorCol,
-    Node **currentLine
-)
-{
-    // ATAS
-    if (ch == 72) {
-
-        if ((*currentLine)->prev != NULL) {
-
-            *currentLine = (*currentLine)->prev;
-
-            (*cursorRow)--;
-
-            int len = strlen((*currentLine)->line);
-
-            if (*cursorCol > len) {
-
-                *cursorCol = len;
-            }
-        }
+    if (found == 0) {
+        printf("\033[1;33mKata '%s' tidak ditemukan dalam file!\033[0m\n", find);
+        return;
     }
 
-    // BAWAH
-    else if (ch == 80) {
-
-        if ((*currentLine)->next != NULL) {
-
-            *currentLine = (*currentLine)->next;
-
-            (*cursorRow)++;
-
-            int len = strlen((*currentLine)->line);
-
-            if (*cursorCol > len) {
-
-                *cursorCol = len;
-            }
-        }
+    fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Gagal membuka file untuk ditulis!\n");
+        return;
     }
 
-    // KIRI
-    else if (ch == 75) {
+    fputs(result, fp);
+    fclose(fp);
 
-        // masih dalam baris
-        if (*cursorCol > 0) {
-
-            (*cursorCol)--;
-        }
-
-        // pindah ke akhir baris atas
-        else if ((*currentLine)->prev != NULL) {
-
-            *currentLine = (*currentLine)->prev;
-
-            (*cursorRow)--;
-
-            *cursorCol = strlen((*currentLine)->line);
-        }
-    }
-
-    // KANAN
-    else if (ch == 77) {
-
-        int len = strlen((*currentLine)->line);
-
-        // masih dalam baris
-        if (*cursorCol < len) {
-
-            (*cursorCol)++;
-        }
-
-        // pindah ke awal baris bawah
-        else if ((*currentLine)->next != NULL) {
-
-            *currentLine = (*currentLine)->next;
-
-            (*cursorRow)++;
-
-            *cursorCol = 0;
-        }
-    }
+    printf("\033[1;32mBerhasil! %d kata '%s' diganti dengan '%s'.\033[0m\n",
+           found, find, replace);
 }

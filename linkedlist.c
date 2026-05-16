@@ -3,110 +3,62 @@
 #include <string.h>
 #include "linkedlist.h"
 
+Node *createNode(const char text[]) {
+    Node *newNode = (Node *)malloc(sizeof(Node));
 
+    if (newNode == NULL) {
+        printf("Gagal alokasi memori\n");
+        return NULL;
+    }
 
-// =========================
-// CREATE NODE
-// =========================
-Node* createNode(char line[]) {
+    strncpy(newNode->data, text, MAX_COLS - 1);
+    newNode->data[MAX_COLS - 1] = '\0';
 
-    Node *newNode = (Node*)malloc(sizeof(Node));
-
-    strcpy(newNode->line, line);
-
-    newNode->next = NULL;
     newNode->prev = NULL;
+    newNode->next = NULL;
 
     return newNode;
 }
 
+void freeList(Cursor *cursor) {
+    Node *temp = cursor->head;
 
+    while (temp != NULL) {
+        Node *hapus = temp;
+        temp = temp->next;
+        free(hapus);
+    }
 
-// =========================
-// APPEND NODE
-// =========================
-void appendNode(Node **head, char line[]) {
+    cursor->head = NULL;
+    cursor->current = NULL;
+    cursor->rowCount = 0;
+}
 
-    Node *newNode = createNode(line);
+void appendNode(Cursor *cursor, const char *text) {
 
-    // jika linked list kosong
-    if (*head == NULL) {
+    Node *newNode = createNode(text);
 
-        *head = newNode;
-
+    if (newNode == NULL) {
         return;
     }
 
-    // traversal ke node terakhir
-    Node *curr = *head;
+    if (cursor->head == NULL) {
 
-    while (curr->next != NULL) {
-
-        curr = curr->next;
+        cursor->head = newNode;
+        cursor->current = newNode;
     }
 
-    // sambungkan node baru
-    curr->next = newNode;
-    newNode->prev = curr;
-}
+    else {
 
+        Node *tail = cursor->head;
 
+        while (tail->next != NULL) {
+            tail = tail->next;
+        }
 
-// =========================
-// GET NODE AT INDEX
-// =========================
-Node* getNodeAt(Node *head, int index) {
-
-    Node *curr = head;
-
-    int i = 0;
-
-    while (curr != NULL && i < index) {
-
-        curr = curr->next;
-
-        i++;
+        tail->next = newNode;
+        newNode->prev = tail;
     }
 
-    return curr;
-}
-
-
-
-// =========================
-// GET ROW COUNT
-// =========================
-int getRowCount(Node *head) {
-
-    int count = 0;
-
-    Node *curr = head;
-
-    while (curr != NULL) {
-
-        count++;
-
-        curr = curr->next;
-    }
-
-    return count;
-}
-
-
-
-// =========================
-// FREE LINKED LIST
-// =========================
-void freeList(Node *head) {
-
-    Node *temp;
-
-    while (head != NULL) {
-
-        temp = head;
-
-        head = head->next;
-
-        free(temp);
-    }
+    cursor->rowCount++;
 }

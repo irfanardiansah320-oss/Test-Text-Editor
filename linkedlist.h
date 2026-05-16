@@ -3,36 +3,22 @@
 
 #define MAX_COLS 100
 
-// =========================
-// STRUCT NODE
-// =========================
 typedef struct Node {
-
-    char line[MAX_COLS];
-
-    struct Node *next;
+    char data[MAX_COLS];
     struct Node *prev;
-  
+    struct Node *next;
 } Node;
 
+typedef struct {
+    Node *head;
+    Node *current;
+    int cursorRow;
+    int cursorCol;
+    int rowCount;
+} Cursor;
 
-// =========================
-// FUNCTION PROTOTYPE
-// =========================
-
-// membuat node baru
-Node* createNode(char line[]);
-
-// menambahkan node di akhir linked list
-void appendNode(Node **head, char line[]);
-
-// mengambil node berdasarkan index
-Node* getNodeAt(Node *head, int index);
-
-// menghitung jumlah node
-int getRowCount(Node *head);
-
-// menghapus semua node
-void freeList(Node *head);
+Node *createNode(const char text[]);
+void appendNode(Cursor *cursor, const char *text);
+void freeList(Cursor *cursor);
 
 #endif
